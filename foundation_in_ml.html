@@ -1,0 +1,115 @@
+<!doctype html>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+<div style= "position: center;padding: 100px 100px;">
+
+
+<h4>Probability</h4>
+Bayesian interprete probability as the quatifying the uncertainty which has two nice machanisms: one is model undertainty which is our ignorance or unknown machanisms in an even or data. And the second is data uncertainty which we can't reduce even data has been collected more. 
+
+Maginalization can be done by integrating out other unwanted variables: 
+\begin{equation}
+p( x_{i:k}) =\int _{C} p({\textstyle x}) dx\backslash x_{i:k}
+\end{equation}
+where we exclude \( x_{i:k}\). Here I abuse notation for integrating multiple variables. The same goes for discrete case. 
+Conditional distribution of \( x\) given \( y\) is just \( p( x|y) =\ \frac{p( x,\ y)}{p( x)}\) which can be rearrange and extend to general \( D\) variables \( p( x_{1} ,\ x_{2} ,\ ...,\ x_{D}) =p( x_{1}) p( x_{2} |x_{1}) p( x_{3} |x_{1} ,x_{2}) ...p( x_{D} |x_{1:D-1})\) and is called chain rule of probability. 
+
+<h4>Limitation of summary statistics</h4> Althouth it is widely used but of course, by capturing the entire set of a variables or entire data in one or two variables give us the itsights for overall information. But with the price of the loss of information gained and misinterpreting if not carefully used. Example is Anscombe's Quartet datasets which is just the set of \( ( x,\ y)\) pairs with special property (for example, all have the same mean and variance). But the entire dataset look entirely different.
+Bayes' Rule is an expression for computing probability of some hidden or unknown variable \( h\) given that we observed \( x\): 
+\begin{equation}
+p( h|x) =\frac{p( h) p( x|h)}{p( x)} \ 
+\end{equation}
+\begin{equation}
+p( x) p( h|x) =p( h) p( x|h) =p( y,h)
+\end{equation}
+Prior \( p( h)\) is knowledge of hidden variables before any obervation. The likelihood \( p( x|h)\) is a function hidden variables since assume that the observed \( x\) is fixed and is not sum up to one. Multiplying together we obtain unnormalized version of joint distribution \( p( x,h)\) and is maginalized by \( p( x)\) over unknown variables \( h\):
+\begin{equation}
+p( x) =\int p( h) p( x|h) dh=\int p( x,h) dh
+\end{equation}
+then
+\begin{equation}
+p( h|x) =\frac{p( h) p( x|h)}{\int p( h) p( x|h) dh} .
+\end{equation}
+We then obtain posterior \( p( h|x)\) after observed some data and update the values. Observe: the integral in normalizing term appear a lot and it is not as much of interest and is hard to compute in general. It is often to drop the demoninator as it is not a function of hidden variables. This overall is called Bayesian inference. Baye's rule can be summarise as \( postiorior\ \varpropto \ prior\ \times \ likelihood\). I like to think it as we multiply some unknown constant to prior knowledge which is some complex stuff and integration and obtain another guess and so on.
+The Dirac delta function is defined by \( \delta ( x) =\begin{cases}
++\infty  & if\ x=0\\
+0 & if\ x\neq 0
+\end{cases}\) where \( \int _{-\infty }^{+\infty } \delta ( x) =1\). It can be think as Gaussian, \( \lim _{\upsigma \rightarrow 0}\mathcal{N}( y|\mu ,\sigma ) \rightarrow \delta ( y-\mu \)). It is the infinitely narrow Gaussian or a tall spike at mean. This will be used latter on.
+
+<h4>Quadratic form and Multivariate Gaussian</h4>
+The generalized quadratic form is given by \( Q( x) =x^{T} Qx\). 
+Definiteness:
+1. positive definite \( ( S_{++})\), e.g. \( Q=x_{0}^{2} +x_{1}^{2} +x_{2}^{2}  >0\) for all nonzero values of \( x\in \Re ^{3}\)\( \backslash x=0\).
+2.  neg-definite \( ( S_{--})\), e.g. \( Q=-\left( x_{0}^{2} +x_{1}^{2} +x_{2}^{2}\right) < 0\) for all nonzero values of \( x\in \Re ^{3}\)\( \backslash x=0\).
+3. positive semi-definite \( ( S_{+})\), e.g. \( Q=( x_{0} +x_{1} +x_{2})^{2} \leqslant 0\) for all nonzero values of \( x\in \Re ^{3}\)\( \backslash x=0\).
+4. neg semi-definite is similar, and \( Q\) is said to be indefinite if it is inconclusive (it can be both +ve and -ve) 
+If we write down the definition of positive definite matrix \( x^{T} Qx >0\), and consider when 1. it eigenvalue \( \lambda _{i} =0\) so that \( Qx=0\) and so \( x^{T} Qx=0\) which obviously not agree with its definition. Now consider again when \( \lambda _{i} < 0\) so that \( Qx=\lambda x\) and so \( x^{T} Qx=x\lambda x=\lambda |x|\). But \( \lambda < 0\) which make it negative, thus is not positive definite. In other word, its eigenvalue must be strictly positive, \( \lambda _{i}  >0\) for all values. 
+
+<h4>Exponential Family</h4>
+Connnection to Maximum entropy modeling
+The formulation of maximum entropy can be writen as \( p^{*} =\mathbf{argmin_{p}} \ KL[ p||q] \ \) subject to some constraint function. Using lagrange duality we obtain another dual problem and has the form of
+\begin{equation}
+p( x) =\frac{1}{Z( x)} q( x) \ \exp\left( -\sum _{x} \lambda _{i} f_{i}( x)\right)
+\end{equation}
+but it is exactly the form of exponential family. See more on explanation of maximum entropy for later.
+
+<h4>Mixture model</h4>
+Consider the convex combination of \( p( x|\theta ) =\sum _{k=1}^{K} s_{k} p_{k}( x)\), where \( \sum _{k} s_{k} =1\) and \( 0\leqslant s_{k} \leqslant 1\). This can be think like a weighted sum of each component of distribution and we mixed it together to form a more complex distribution. Or can be think like \( p( x|\theta )\) is the entire population and which seperate in to each subpopulation of \( p_{k}( x\)). This mixture has weights as one parameters set and its corresponding parameters to each subpopulation.
+
+image[mc://users/2152b73dc38e7b03b98d2da6c1695c1e/contents/908de01afe396b6c9ac38694d81ddf4b-WVNUfBuc0N-Screen_Shot_2565-05-02_at_08.35.36.png]
+
+The prior is its weights \( s_{k}\) which is the knowledge of each contribution to the final mixture, \( s_{k} =p( z=k)\), a latent variable. For example use is gaussain model for use of clustering data point. By first finding its maximum likelihood, \( L( \theta ,x)\) and then associate the distribution with each gaussian to discrete hidden variables \( z_{n} \in \ \{1,...,K\}\). Then we compute the posterior of \( p( z_{n} =k|x_{n} ,\theta )\) using bayes rule. Finally obtain the hard clustering by maximize this quatity, \( \mathbf{argmax}_{k} \ R=\mathbf{argmax}_{k} \ p( z_{n} =k|x_{n} ,\theta )\). In other word, is finding the most probable cluster. On example is K-means cluster where each data point is assign to the closest centroid by measure of Euclidean distance. This occur when the prior is uniform, \( p( z_{n} =k|\theta )\) and covariance is identity (spherical) and formulate as \( z_{n} =\mathbf{argmin}_{k} ||y_{n} -\mu _{k} ||_{2}^{2}\) (minimizing the distances of each mean for each component). more detail https://www.cs.toronto.edu/~rgrosse/csc321/mixture_models.pdf
+
+<h4>Probabilistic graphical models</h4>
+It's a representation of the joint distributions over abitrary distribution with assumption that some distribution will be depend on others. The joint is given by
+
+\begin{equation}
+p( X_{1:T}) =\prod _{i=1}^{T} p( X_{i} |X_{( parent)}) \ 
+\end{equation}
+where the child \( X_{i}\) is depend on set of parent distribution \( X_{( parent)}\). For example, Marcov chain is PGM since it can be represented by joint over distribution where \( X_{( parent)}\) is a set of past memory of the state, \( X_{( parent)} \in \{x_{1} ,...x_{t-1}\}\). And the \( n\)'th order Markov model is when the children is depend on some length of past memory: \( X_{( parent)} \in \{x_{1} ,...x_{n}\}\). When \( n=1\), it is firsts order markov model which present state only depend on last state. Markov chain can by think like models represent the distribution over  possible sentences of length \( T\). 
+
+<h4>Maximum likelihood Estimation (MLE)</h4>
+The heart of machine learning is the concerning of finding the optimal parameters for given model. We then need some information of what relate the distribution given approximation of parameters to the true distribution. We use an objective function which in machine learning we call it the loss that tell how the model affect the prediction. The general form of optimization is then \( \hat{\theta } =\mathbf{argmin}_{\theta } F( \theta )\) where \( F( \cdot )\) is some objective. One way to find such \( \theta \) in general machine learning would be the parameters that assign highest probability of dataset (training set) and is called MLE: \( \hat{\theta } =\mathbf{argmax}_{\theta } p( D|\theta )\). Since it is simply the task when assuming IID in training set, so that the data can be factored in to the product of each example: \( p( x|\theta ) =\prod _{n=1}^{N} p( y_{n} |x_{n} ,\theta )\). Note here that these are al the same distribution and parameters. The problem is that this product is prone to numerical underflow. In optimization perspective, it is much simpler to decompose this likelihood into simpler function. This, however, do not change the objective itself only transform the equation. Hence, we consider negative log-likelihood since the log of product is the sum of log. The negative sign is due to that we want to maximize likelihood, but optimization problem often concerns with minimizing the function. Another interpretation for negative log-likelihood is to view it as minimizing the distance of underline data-generating distribution and model distribution: 
+\begin{equation}
+KL( p||q) =\mathbb{E}_{x\sim \hat{p}}[\log\hat{p}( x) -\log p( x)]
+\end{equation}
+\begin{equation}
+KL( p||q) =-\mathbb{E}_{x\sim \hat{p}}[\log p( x)] +\delta \approx -\frac{1}{N}\sum _{n=1}^{N}\log p( x_{n} |\theta )
+\end{equation}
+In other word computing MLE is equivalent to minimizing the KL divergence which is just the expected negative log-likelihood, \( L( \theta ) =-\log p( x_{n} |\theta )\). Note here that we an drop the term \( \log\hat{p}( x)\) since it is independent from model parameters \( \theta \). Here \( \delta \) is some constant which can be ignored since optimizing this would not change the value of \( \theta \) only the objective will change. Consider Example of Catagorical distribution:
+\( p\mathsf{( x|\theta ) =Cat}( x|\theta ) =\prod _{c=1}^{D} \theta _{c}^{\mathbf{I} ( x=c)}\) where \( \sum _{c} \theta _{c} =1\) and \( \theta _{c} \in [ 0,1]^{D}\). Now suppose given the dataset \( D=\{x_{1} ,...,x_{N}\}\), the question is what is the value of \( \theta \) that best describe the set \( D\)? We use MLE. We can formulate the constrained optimization problem of MLE for catagorical distribution as
+\begin{equation}
+\mathbf{max}_{\theta }\log\prod _{c=1}^{D} \theta _{c}^{\mathbf{I} ( x=c)} \ \mathbf{subject\ to} \ \sum _{c} \theta _{c} =1
+\end{equation}
+Here to reduce the constraint, we will find its dual problem that do not introduce constraint. Here I include the full derivation here, reader can skip to result transformed problem.
+ The langragian \( f_{0} =0=1-\sum _{c} \theta _{c}\), the dual problem then is 
+\begin{gather}
+g( \theta ,\ \lambda ) =\log\prod _{c=1}^{D} \theta _{c}^{\mathbf{I} ( x=c)} +\lambda \left( 1-\sum _{c} \theta _{c}\right)\\
+=\sum _{n=1}^{N}\sum _{c=1}^{C} \mathbf{I} \left( x^{c} =c\right)\log \theta _{c} +\lambda \left( 1-\sum _{c} \theta _{c}\right)
+\end{gather}
+To minimize this, take the derivative of \( g( \theta ,\ \lambda )\) with respect to its arguments and set it to zero:
+\( \frac{\partial g( \theta ,\ \lambda )}{\partial \theta _{i}} =\sum _{n=1}^{N} \mathbf{I} \left( x^{n} =i\right)\frac{1}{\theta _{i}} +\lambda =\frac{-N_{i}}{\theta _{i}} +\lambda =0\Longrightarrow N_{i} =\lambda \theta _{i}\). Note that \( \frac{\partial }{\partial \theta _{i}}\sum _{c=1}^{C} \mathbf{I} \left( x^{c} =c\right)\) reduce to one term \( \mathbf{I} \left( x^{n} =i\right)\) where \( c=i\). (note here that \( \theta _{i}\) is only one component of \( \theta \) and \( N_{i}\) is the number that \( x^{c} =i\) is observed). And \( \frac{\partial g( \theta ,\ \lambda )}{\partial \lambda } =1-\sum _{c} \theta _{c} =0\). Since \( \lambda =\lambda \sum _{c} \theta _{c} =\sum _{c}\frac{N_{i}}{\theta _{i}} \theta _{c}\), but the ratio has to be constant and must be hold for any \( c\): \( \lambda =\sum _{c}\frac{N_{c}}{\theta _{c}} \theta _{c} =\sum _{c} N_{c} =N\). 
+*Finally, \( N_{i} =N\theta _{i} \Longrightarrow \theta _{i} =\frac{N_{c}}{N}\). This is very intuitive result, the probability of obseved the \( i\)'th component is from dataset is the fraction of number of its occurance and total observation. 
+
+<h4>Bayesian Statistics (inference)</h4>
+Clearly one can see that MLE, MOM (method of moment; didn't include here) or online-recussive estimation are an exact point estimate of parameters spaces. However, doint this, meaning we ignore any uncertainty within dataset that we use to train such parameters. In bayesian perspective, we assume the observed data is not random. On the other hand, we view model parameters as unknown. So instead, bayesian inference yields a (posterior) distribution over parameters. The key is to use Bayes'rule for updating the prior knowledge of distribution of parameters:
+\begin{equation}
+p( \theta |D) =\frac{p( \theta ) p( D|\theta )}{p( D)} =\frac{p( \theta ) p( D|\theta )}{\int p( \theta ) p( D|\theta ) d\theta }
+\end{equation}
+As discussed, the denominator (maginal likelihood) is not of interest and is neglegible since it is not depend on model parameters \( \theta \), it has been integrated out. There are some work which try to approximate the integration , for example, sampling method using Monte Carlo to numerically evaluate it, MCMC, deterministic approximations, variational inference, Laplace approximation and expectation propagation, but I won't discuss all of it here. Once the posterior \( p( \theta |D)\) is obtained, we compute posteior predictive distribution over output by maginalize out unknown parameters:
+\begin{equation}
+p( y|x,D) =\int p( y|x,\theta ) p( \theta |D) d\theta 
+\end{equation}
+But the integral if mostly intractable since the parameters \( \theta \) is generally high-dimensional. A simple approximation is to assuming single best \( \hat{\theta }\) like MLE. The posterior for single best \( \hat{\theta }\) is \( p( \theta |D) =\delta ( \theta -\hat{\theta })\) where we assign infinite probability to it. 
+Example of estimating posterior: #TODO 
+Conjugate prior
+In updating the parameters distribution above, it is use full to consider when the posterior \( p( \theta |D)\) is in the closed-form. In other word we would like to choose prior \( p( \theta )\) so that the posterior \( p( \theta |D)\) is closed upder Bayesian updates. This is called conjugacy. We say \( p( \theta ) \in \mathcal{F}\) is a conjugate prior for the likelihood \( p( D|\theta )\) if posterior \( p( \theta |D)\) is in the same parametrize family as prior, \( p( \theta |D) \in \mathcal{F}\). If the family \( p( \theta ) \in \mathcal{F}\) is in the exponential family, then the update can be compute in closed-from solution. For example, beta distribution is conjugate prior for Bernoulli likelihood, it has the same distribution as prior. See more detailed explanation.
+However, there is many machine learning models that do not have a conjugate prior to the likelihood function, no closed-form distribution of posterior \( p( \theta |D)\). 
+
+In choosing the prior, it is often disirable to use an informative prior, or having high entropy (e.g. Jeffreys  prior), we assume the uncertainty before observing data. Flat prior, \( p( \theta ) \varpropto 1\), can also be used and can be think like infinite Gaussian prior. 
+
+<h4>Empirical Prior (Bayes) more  #TODO </h4>
+
+<h4>Frequentist perspective  #TODO </h4>
+In Bayesian approach, the uncertainty of the parameters is represented as posterior, however in frequentist statistics, it's represented by sampling distribution of an estimator. It is the distribution which we expect if we apply an estimator multiple time to an unseen set of data which generated from some distribution. To be more precise, we generate a set of data: \( D_{s} =\{x_{n} \sim p\left( x_{n} |\theta ^{\ast }\right)\)} where \( p\left( x_{n} |\theta ^{\ast }\right)\) is true distribution and then apply estimator \( \hat{\theta }\) for each set of data, \( \hat{\theta }( D_{s})\). Let \( S\rightarrow \infty \) to obtain sampling distribution.
