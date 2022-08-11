@@ -1,5 +1,4 @@
 <!doctype html>
-
   <script type="text/javascript" id="MathJax-script" async
   src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
 </script>
@@ -8,7 +7,7 @@
     <meta charset="utf-8">
     <meta name="keywords" content="Post 1 Headline">
     <meta name="description" content="">
-    <title>Variational Inference and application</title>
+    <title>Generative Model</title>
     <link rel="stylesheet" href="../nicepage.css" media="screen">
 <link rel="stylesheet" href="../Post-Template.css" media="screen">
     <script class="u-script" type="text/javascript" src="../jquery.js" defer=""></script>
@@ -73,62 +72,111 @@
         <div class="u-container-style u-expanded-width u-post-details u-post-details-1">
           <div class="u-container-layout u-valign-middle u-container-layout-1"><!--blog_post_image-->
             <!--/blog_post_image--><!--blog_post_header-->
-            <h2 class="u-blog-control u-text u-text-1">Variational Inference and application</h2><!--/blog_post_header--><!--blog_post_metadata-->
+            <h2 class="u-blog-control u-text u-text-1">Generative Model</h2><!--/blog_post_header--><!--blog_post_metadata-->
             <div class="u-blog-control u-metadata u-metadata-1"><!--blog_post_metadata_date-->
-              <span class="u-meta-date u-meta-icon">Jun 16, 2022</span><!--/blog_post_metadata_date--><!--blog_post_metadata_category-->
+              <span class="u-meta-date u-meta-icon">Aug 07, 2022</span><!--/blog_post_metadata_date--><!--blog_post_metadata_category-->
               <!--/blog_post_metadata_category--><!--blog_post_metadata_comments-->
               <!--/blog_post_metadata_comments-->
             </div><!--/blog_post_metadata--><!--blog_post_content-->
-            <div style= "position: center;padding: 100px 100px;">
+            
+<div style= "position: center;padding: 100px 100px;"><p>The most general case is given the set \(x\) of real sample data (e.g. image), the goal is to generate another set of data by some function generally neural network which is similar to real samples. We aim, in other word, given generated data \( x\sim p_{g}( z)\) of some latent \(\ z\) that minimize kl-divergence, \(\ D_{KL}( p_{g}( z) ||p_{r}( x))\) where \(p_{r}\) is real sampled dataset.
+
+
+
+In order to obtain such generator \( G\), we use adversarial training (GANs, Ian Goodfellow 2016) by having another discrimminator \((\ \mathbb{R}^{n}\rightarrow \mathbb{R} :D\) which assign value of the probability of either real sample or generated one. Intuitively, generator \( G\) aim to minimize or "faking" discrimminator that the its fake generated output is "real". And discriminator must assign low probability to fake generated output, ideally zero.
+
+
+
+According to original GANs papers, this can be formulated as minimax game where, given the objective \(\ f\), we try to both minimize and maximize it at the same time. Note also that during gradient updation, the first term do no effect \(\ G\).
+\begin{equation}
+\mathbf{\underset{G}{\mathbf{m} in} \ \underset{D}{\mathbf{m} ax}} \ f( D,G) =\mathbb{E}_{x\sim p_{r}( x)}[\log p_{r}( x)] +\mathbb{E}_{x\sim p_{g}( x)}[\log( 1-D( x))]
+\end{equation}
+</p>
 
 <p>
-Suppose that we have the joint distribution of \( p( x,z)\) where \( x\in \mathbb{R} ^{n}\) is observed data point and \( z\) is latent variable \( z\in \mathbb{R} ^{m}\). For example, we observe \( x\) sequences of text and \( z\) as some topic related to given text or the hidden parameters of the distribution in traditional inference setting. The joint describe the relation between these points. The goal here is to infer the information about latent or hidden \( z\) by observing the variable \( x\). In general, we want the posterior \( p( z|x)\) where can be expressed using Baye's Theorem. So this is somehow relate to bayesian inference. We relate posterior to prior as 
-\begin{equation}
-p( z|x) =\frac{p( z) p( x|z)}{\int p( z) p( x|z) dz} .
-\end{equation}where the normalizing constant ensure that the posterior \( p( z|x)\) sum up to one and is called marginal distribution \( p( x)\). This can can also be view as probabilistic graphical model where there exist direct pointing from hidden variable to observable variables, a conditional \( p( x|z)\). In given example, the posterior is \( p( topic|data)\) which we want to infer from observed text. It involve integration over entire latent variable \( z\) dimension, I abuse a little of notation here for simplicity. Instead of finding the true posterior \( p( z|x)\), we use surrogate function as approximation:
-\begin{equation}
-q( z) \approx p( z|x)
-\end{equation}
-intuitively we want to find 'the best' \( q\) that as close as possible to the true distribution. This can be view as minimizing the matrix which describe dissimilarity of two distributions, the KL-divergence between \( q\) and the \( p\):
-\begin{equation}
-q^{*} =\underset{q\in Q}{\mathbf{argmin}} \ D_{KL}[ q( z) \| p( z|x)]
-\end{equation}
-where now I introduce again a useless formula that cannot be computed directly because of the posterior \( p( z|x)\). Note that we do not optimize over set of variables but the function of \( q\) over possible set of \( Q\) as the name suggested 'variational'. And the possible set \( Q\) here is a tractable family of distributions. To explicitly see why it is useless, write down the objective function explicitly as
-\begin{equation}
-D_{KL} =\mathbb{E}_{z\sim p( z)}\left[\log\frac{p( z)}{p( z|x)}\right] =\int _{z_{1}} \cdot \cdot \cdot \int _{z_{D}}\log\frac{p( z)}{p( z|x)} dz_{0} \cdot \cdot \cdot dz_{D}
-\end{equation}
-The objective involve the posterior which is unknown in general and integrating this is catastrophic. Now if working around this equation will come across evidence lower bound:
-\begin{equation}
-D_{KL}[ q( z) \| q( z|D)] =-\mathbb{E}_{z\sim q( z)}\left[\log\frac{p( z,D)}{p( z)}\right] +\log p( D) =-L( q) +\log p( D)
-\end{equation}The last term is called evidence and is always nonpositive (log of value between 0 and 1) and is independent on surrogate, it is depend only on observed data point which is also fix. The term \( L\) must be positive since kl-divergence is non-negative and is less than the evidence \( \log p( x) \geqslant ELBO\), thus the name ELBO, \( L( q)\). This bound can be found be using Jensen's inequality and is also the same way for deriving EM algorithm. If it is equal to the evidence, \( -L=\log p( D)\), the kl-divergence shrink to zero too. Write down ELBO as
+Now, imagine we have optimal \(D\) and \(G\) is fixed, then what should the value of \(D\) be? This first would mean that the KL-divergence approach zero, \(\ p_{r} =p_{g}\), which also make \(G\) also approach \(\ 1/2\) given that the input is normally distributed with fake and real sample sets. This also can be seen by algebraically solve the optimal value of \(\ D\) by finding the derivative of objective \(\ f\) with respect to discrimminator \(\ D\), set it to zero and solve for optimal \(\ D^{*}\):
 \begin{gather}
-ELBO( Q) \ =\ \mathbb{E}[\log \ p( z,\ x)] \ −\ \mathbb{E}[\log q( z)]\\
-=\mathbb{E}[\log \ p( x|z)] +\ \mathbb{E}[\log p( z) \ −\ \log \ q( z)]\\
-=\ E[\log \ p( x|z)] \ −\ D_{KL}( Q( Z) \| P( Z))
+f( D) =\int _{x} p_{r}( x)\log D( x) +p_{g}( x)\log( 1-D( x)) dx\\
+\frac{df( D)}{dD} =p_{r}( x)\frac{1}{\ln 10}\frac{1}{p_{r}( x)} -p_{g}( x)\frac{1}{\ln 10}\frac{1}{1-p_{r}( x)} =0\\
+D^{*}( x) =\frac{p_{r}( x)}{p_{r}( x) +p_{g}( x)} =\frac{1}{2}
 \end{gather}
-ELBO is then a expected log-likelihood of observed data minus kl-divergence between true dribution and surrogate one, and can be think like trade off between each other. We then can state the optimization problem in equation (3) as minizing the lower bound evidence (ELBO):
-\begin{equation}
-q^{*} =\underset{q\in Q}{\mathbf{argmin}} \ L( q)
-\end{equation}
-We ignore the evidence \( \log p( D)\) is not depend on \( q\). This can be stated also as maximize the ELBO is quivalent to minimizing KL-divergence. Note that the ELBO is not convex. We can simply optimizing problem by consider mean field VI where it is assume that the each of latent variable \( z\) is mutually independent and its functional distribution is a distinct factors, \( Z=\{z_{i}\}\). Suppose there are \( m\) latent spaces and it is also not the model of the observed data:
-\begin{equation}
-q( Z) =\prod _{i=1}^{m} q_{i}( Z_{i})
-\end{equation}We can compute expectation of over ELBO and take follow the gradient with respect to the variational parameters. But this in general won't work well in many desired model that do not assume the conjugacy. Instead of finding expectation over variational distribution, we take first the derivative and find the expectation:
+Now if we also have both optimal \(\ G\) and \(\ D\), \(\ p_{r} =p_{g}\) and \(\ D^{*}( x) =1/2\) then, plug this value in give us the optimal value of objective function of \(\ f\left( D^{*} ,G\right) =-2\log 2\). By Jensen–Shannon divergence \(\ D_{SH}\):
 \begin{gather}
-\nabla _{v} ELBO( v) =\nabla _{v}\mathbb{E}_{q( z)}[\log \ p( z,\ x) -\log q( z)]\\
-=\mathbb{E}_{q( z;v)}[ \nabla _{v}\log \ q( z;v) \nabla _{v}(\log p( x,z) -\log q( z;v))]\\
-\approx \frac{1}{N}\sum _{n=1}^{N}[ \nabla _{v}\log \ q( z_{n} ;v) \nabla _{v}(\log p( x,z_{n}) -\log q( z_{n} ;v))]
+D_{SH} =\frac{1}{2} D_{KL}\left( p_{r}\Bigl|\Bigl|\frac{p_{r} +p_{g}}{2}\right) +\frac{1}{2} D_{KL}\left( p_{g}\Bigl|\Bigl|\frac{p_{r} +p_{g}}{2}\right)\\
+=\ 1/2\left(\log 4+f\left( G,D^{*}\right)\right)\\
+f\left( D^{*} ,G\right) =2D_{SH}( p_{r} ||p_{g}) -2\log 2
 \end{gather}
-Once we obtained the expectation of gradient and that also know the distribution which gradient sampled from, we can perform Monte Carlo approximation where sampled from variational distribution. 
+And that the first term vanish left only second term, \(\ 2D_{SH}( p_{r} ||p_{g}) =0\).
 
-For example, variational autoencoder (VAE) is such stochastic VI algorithm where the encoder can be interpreted as posterior \( p( z|x)\). It encode some hidden information or latent variable in full vector \( x\in \Re ^{n}\) to \( z\in \Re ^{m}\) where \( n >m\). This encode approximate the posterior for selected dimension that represent latent space. And the decoder \( p( x|z)\) is generative model where it decode information on latent space to distribution of actual data \( x\). VAE optimize over posterior and generative distribution by follow the gradient with respect to variational and generative parameters:
+
+
+Note that we can will training GANs also by Maximum Likelihood where given some known \(\ p_{r}\) and initial guess of \(\ p_{g}\), meaning that \(\ p_{g}( x)  >0\) for all \(\ x\) and must integrate to one. This is directly learn probability distribution. The second way is we learn function that transform some variable \(\ Z\) to \(\ p_{g}\) where \(\ z\in Z\) come from tractable family of distributions. Indeed, first approach is intractable since its objective is equivalent to KL-divergence of these two distributions. 
+</p>
+
+
+
+<h4>Some training issue</h4>
+<p>
+This training GANs is non-cooperative game where each player is trying to maximize its own objective. These two model \(\ G\) and \(\ D\) try to find its Nash-Equilibrium of two-player non-cooperative game. \href{https://arxiv.org/abs/1904.08994}{Weng} has a nice example illustration on this, imagine an objective \(\ f=xy\) where we simultaneously maximize \(\ \mathbf{max}_{x} f\) and minimize \(\ \mathbf{min}_{y} f\). Updating this using \(\ x_{k+1}\leftarrow x_{k} +ay\) and \(\ y_{k+1}\leftarrow y_{k} -ax\) will couse a huge oscillation in time both for value of \(\ x\), \(\ y\) and also the objective \(\ f\). This cause training the GANs to be instability and hard to converge to optimal value.
+
+
+
+And if, however, the discriminator doing "too well" on the task but not the generator. The probability then \(\ D( x) =1\) for \(\ x\sim p_{r}\) and \(\ 0\) for \(\ x\sim p_{g}\). This also couse the gradient approach zero and no value is been updated or very slow (see more <a href="https://arxiv.org/pdf/1701.04862">Arjovsky</a>). If discriminator doing "not well", the generator cannot receive true feedback and having no preference where the gradient update should go. For more detail to improve training GANs 
+</p>
+see more on <a href="https://lilianweng.github.io/posts/2017-08-20-gan/">(1)</a>
+<a href="https://proceedings.neurips.cc/paper/2016/file/8a3363abe792db2d8761d6403605aeb7-Paper.pdf">(2)</a>
+
+<h4>WGANs objective</h4>
+<p>
+The Wasserstein or Earth mover's distance (EM) is a probabilitistic distance, according to <a href="https://en.wikipedia.org/wiki/Earth\_mover">this</a>, it is interpreted as minimum cost of moving a pile of dirt to another hole where the cost here is the amount of dirt and distance. In continuous case EM is formulated as:
 \begin{equation}
-f=\mathbb{E}_{z\sim q( z)}[\log \ p( x|z)] -D_{KL}[ q( z|x) \| p( z)]
+D_{EM}( p_{r} ||p_{g}) =\inf_{\beta \sim \prod ( p_{r} ,p_{g})}\mathbb{E}_{x,y\sim \beta }[\Vert x-y\Vert ]
 \end{equation}
-The first term is reconstruction loss (mapping from latent space to \( x\)) and second term is interpreted as regularized term. The illustration is something like this 
-<img src="image/vi.png" alt="variational inference", style="width:700px;height:180px;">
+In discrete space, imagine some distribution \(\ p_{u} =\{3,1,3,5\}\) and another \(\ p_{v} =\{1,2,4,5\}\). The pile to move here is sum over all mimimum moves to make \(\ p_{u} =p_{v}\). There are many way to adding/subtracting one from another to make these distribution similar. But we only want the least way to do it as the EM use infimum (greatest lower bound) over joint \(\ p_{r}\) and \(\ p_{g}\) or its minimum distance. The minimum cost in this case here is \(\ p_{u}^{1}\rightarrow p_{v}^{1} =1\) and then \(\ \ p_{v}^{2}\rightarrow p_{u}^{3} =1\). The distance is then \(\ D_{EM} =\sum _{i}| \delta _{i}| =1+1=2\). In continuous case, the amount dirt move is its joint \(\ \prod ( p_{r} ,p_{g})\) and distance of \(  x-y\Vert \), so the total cost is \(\prod (p_{r} ,p_{g})\Vert x-y\Vert \). The cost for over all pairs of \(\ ( x,y)\) is 
+\begin{equation}
+\sum _{x,y} \beta ( x,y)\Vert x-y\Vert =\mathbb{E}_{x,y\sim \beta }[\Vert x-y\Vert ]
+\end{equation}
+In practice, we cannot use an exhaustive search for every possible joint of \(\ p_{r}\) and \(\ p_{g}\) and also find its infimum. Note that I also use \(\ f\) for parametrized function. Kantorovich-Rubinstein Duality transform this EM into new one:
+\begin{equation}
+E_{EM} =\frac{1}{K}\sup _{|f|_{L} \geqslant K}\mathbb{E}_{x\sim p_{r}}[ f( x)] -\mathbb{E}_{x\sim p_{g}}[ f( x)]
+\end{equation}
+See <a href="https://courses.cs.washington.edu/courses/cse599i/20au/resources/L12\_duality.pdf">this</a> for detailed proof. The objective \(\ f\) is \(\ K\)-Lipschitz continuous is differentiable and is bounded where there exist a constant \(\ K\geqslant 0\) such that for all scalar \(\ x_{0}\) and \(\ x_{1}\): \(\ |f( x_{o}) -f( x_{1}) |\leqslant K|x_{0} -x_{1} |\). This is saying that the function \(\ f\) should not change "too" quick or its derivative is too big. The change in objective is then :
+\begin{equation}
+L=\max_{\theta }\frac{1}{K}\sum _{k=0}^{K} f_{w}\left( x^{k}\right) -\frac{1}{K}\sum _{k=0}^{K} f_{w}\left( g_{\theta }\left( z^{k}\right)\right)
+\end{equation}
+We could use gradient clipping after updating or gradient penaltry in objective as \(\ f=L+\lambda ( |\nabla D( x) |_{2} -1)^{2}\).
+
+This post have a nice explanation for WGANs 
+<a href="https://vincentherrmann.github.io/blog/wasserstein/"WGANs></a>
+<a href="https://arxiv.org/pdf/1704.00028.pdf">training technique</a>
+<a href="https://proceedings.neurips.cc/paper/2016/file/8a3363abe792db2d8761d6403605aeb7-Paper.pdf">(1)</a>
+<a href="orginal papers (WGAN): https://arxiv.org/pdf/1701.07875.pdf">Gans</a>
+
+</p>
+
+<h4>More efficient way to find latent space \( p( z)\) AutoEncoder and VAE</h4>
+
+<p>
+Generic GANs only consider mapping from latent space distributed from some tractable familty of distribution. But such latent space, even having good generator, may not be a good representation and the generator will not preduce data that similar to true distributions. AE reconstruct original input while compressing the data in to latent space \( z\) before feeding to upsampling layers of the convolutional network. VAE, like AE but only not mapping to fixed vector but distribution. VAE sample \( x\) from conditional \( p_{\theta }( x|z)\) as
+\begin{equation}
+p_{\theta }( x) =\int p_{\theta }( x|z) p_{\theta }( z) dz
+\end{equation}
+and, from my previous post on VAE, we approximate this integral by consider log-likelihood function \( p_{\theta }( x)\) (see my previous post for more detailed derivation) :
+\begin{equation}
+\log p_{\theta }( x) =\mathbb{E}_{z\sim q_{\omega }( z|x)}[\log \ p_{\theta }( x|z)] -D_{KL}( q_{\omega }( z|x) ||p_{\theta }( z)) +D_{KL}( q_{\omega }( z|x) ||q_{\theta }( z|x))
+\end{equation}
+since kl-divergence is always non negative, we have that 
+\begin{gather}
+\log p_{\theta }( x) \geqslant \mathbb{E}_{z\sim q_{\omega }( z|x)}[\log \ p_{\theta }( x|z)] -D_{KL}( q_{\omega }( z|x) ||p_{\theta }( z))\\
+=ELBO( x;\theta ;\omega )
+\end{gather}
+In word, we normally maximizing likelihood \( p_{\theta }( x)\) which is true distribution that generate data and is unknown. But we have ELBO which is tractable thus we the objective function of VAE is 
+\begin{equation}
+\dot{x} =\mathbf{argmax}_{x} ELBO( x;\theta ;\omega )
+\end{equation}
 </p>
 </div>
+
           </div>
         </div><!--/blog_post--><!--/post_details-->
       </div>

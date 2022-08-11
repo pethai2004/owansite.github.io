@@ -1,16 +1,20 @@
 <!doctype html>
-<html style="font-size: 16px;"><head>
+
+  <script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+<html style="font-size: 16px;" lang="en"><head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="utf-8">
     <meta name="keywords" content="Post 1 Headline">
     <meta name="description" content="">
-    <meta name="page_type" content="np-template-header-footer-from-plugin">
     <title></title>
     <link rel="stylesheet" href="../nicepage.css" media="screen">
 <link rel="stylesheet" href="../Post-Template.css" media="screen">
     <script class="u-script" type="text/javascript" src="../jquery.js" defer=""></script>
     <script class="u-script" type="text/javascript" src="../nicepage.js" defer=""></script>
-    <meta name="generator" content="Nicepage 4.10.5, nicepage.com">
+    <meta name="generator" content="Nicepage 4.14.1, nicepage.com">
     <link id="u-theme-google-font" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i|Open+Sans:300,300i,400,400i,500,500i,600,600i,700,700i,800,800i">
     
     
@@ -33,7 +37,7 @@
     <meta name="twitter:title" content="Post Template">
     <meta name="twitter:description" content="">
   </head>
-  <body class="u-body u-xl-mode"><header class="u-clearfix u-header u-palette-1-light-2 u-header" id="sec-b8de"><div class="u-clearfix u-sheet u-sheet-1">
+  <body class="u-body u-xl-mode" data-lang="en"><header class="u-clearfix u-header u-palette-1-light-2 u-header" id="sec-b8de"><div class="u-clearfix u-sheet u-sheet-1">
         <a href="../Home.html" data-page-id="208602995" class="u-image u-logo u-image-1" data-image-width="1000" data-image-height="1000" title="Home">
           <img src="../images/owanlogo.png" class="u-logo-image u-logo-image-1">
         </a>
@@ -78,7 +82,83 @@
             </div><!--/blog_post_metadata--><!--blog_post_content-->
             <div class="u-align-justify u-blog-control u-post-content u-text u-text-2 fr-view">
   
-  </div><!--/blog_post_content-->
+  </div><div style= "position: center;padding: 100px 100px;">
+
+<h4>Chapter 2 Multi-armed Bandits</h4>
+<p>
+The true expected value of \( q_{*}( a) \equiv \mathbb{E}[ R_{t} |A_{t} =a]\), the ideal then is to choose action \( a\in A\) which maximize expected reward. In is obvious that such value is not known. One naive approach is estimate it \( q_{*}( a) =Q_{t}( a)\) is estimate at time \( t\): \( Q_{t} =\frac{\sum _{i=1}^{t-1} R_{i} \cdot \mathbb{1}_{A_{i} =a}}{\sum _{i=1}^{t-1}\mathbb{1}_{A_{i} =a}}\). As the number of sample go to infinity (the denorminator also approach inf), it converge to true estimate. The estimate require storing reward information, another incremental estimate is having the form:
+\begin{equation*}
+NewEstimate\leftarrow OldEstimate+StepSize\ *\ [ Target-OldEstimate]
+\end{equation*}
+We can write \( Q_{n+1}\) as \( Q_{n+1} =Q_{n} +1/n[ R_{n} -Q_{n}]\) (see page 31). When reward is nonstationary, it is desirable to weight more recent reward, it turns out that by using state-size, the estimate also being weighted at the same time (see p.32)\begin{equation}
+Q_{n+1} =Q_{n} +\alpha [ R_{n} -Q_{n}] =( 1-\alpha )^{n} Q_{1} +\sum _{i=1}^{n} \alpha ( 1-\alpha )^{n-1} R_{i}
+\end{equation}
+Stochastic approximation theory condition that the step size is large enough:\( \sum _{n=1}^{\infty } a_{n} =\infty \) and eventually become small \) \)\( \sum _{n=1}^{\infty } a_{n}^{2} < \infty \). The update is bias in estimate of initial value \( Q_{1}\), if select action greedily and we overestimate the value of \( Q_{1}\), this is sometimes beneficial since the policy select optimistic one that not actually true, it thus explore more. This is non practical in general nonstationary problem. We can simply make update confidence bound on \( Q\) and selecting action by \( A_{t} =\mathbf{argmax}_{a}[ Q+cB]\) where \( B\) is some value, one formulation is where:
+\begin{equation}
+Q_{opt} =Q_{t}( a) +c\sqrt{\frac{\ln t}{N_{t}( a)}}
+\end{equation}
+The natural log means that the increase get smaller over time but unbounded.
+</p>
+<h4>
+Chapter 3 Finite MDPs</h4>
+<p>
+RL in general is formularized as a finite MDPs of sequential decision making where action is influence not only current time \( t\) but also its subsequent. The dynamics of MDPs is defined as
+\begin{equation}
+p\left( s^{'} ,r|s,a\right) =Pr\left\{S_{t} =s^{'} ,R_{t} =r|S_{t-1} =s,\ A_{t-1} =a\right\}
+\end{equation}
+and the probability \( p\left( s^{'} ,r|s,a\right)\) sum up to one over state \( s\in S^{'}\)and \( r\in R\). In finite markov we assume that observation represent all knowledge of state, latter for approximation method we relax this condition and learn from non-Markov observations. Sum out reward we get state transition:
+\begin{equation}
+p\left( s^{'} |s,a\right) =\sum _{r\in R} p\left( s^{'} ,r|s,a\right)
+\end{equation}
+and expected reward is
+\begin{equation}
+\mathbb{E}[ R_{t} |S_{t-1} =s,A_{t-1} =a] =\mathbb{E}\left[\sum _{s^{'} \in S} p\left( s^{'} ,r|s,a\right)\right] =\sum _{r\in R} r\sum _{s^{'} \in S} p\left( s^{'} ,r|s,a\right)
+\end{equation}
+the last equation is
+\begin{equation}
+\mathbb{E}\left[ R_{t} |S_{t-1} =s,A_{t-1} =a,S_{t} =s^{'}\right] =\sum _{r\in R} r\frac{p\left( s^{'} ,r|s,a\right)}{p\left( s^{'} |s,a\right)}
+\end{equation}
+Note that we can write \( G_{t} =R_{t+1} +\gamma G_{t+1}\) where \( G_{t}\) is discounted returns. For example if every time step the reward is constant one, the return is \( G_{t} =1/( 1-\gamma )\), it is geometric sequences. We estimate value function \( v_{\pi }( s)\) from generated by policy \( \pi \), is mesure how good at current state is since it is defined as expected discounted reward \( v_{\pi }( s) =\mathbb{E}_{\pi }[ G_{t} |S_{t} =s]\) and also action value function: \( q_{\pi }( s,a) =\mathbb{E}_{\pi }[ G_{t} |S_{t} =s,A_{t} =a]\). Since it is estimate as empirical return, we call it is Monte Carlo methods for estimating value function. The value function \( v_{\pi }( s)\) statisfies recursize relationship, it can be written as:
+\begin{equation}
+v_{\pi }( s) =\sum _{a} \pi ( a|s)\sum _{s^{'} ,r} p\left( s^{'} ,r|s,a\right)\left[ r+\gamma v_{\pi }\left( s^{'}\right)\right]
+\end{equation}
+It involve succesor \( v_{\pi }\left( s^{'}\right)\) of current value function \( v_{\pi }( s)\), thus is called Bellman equation for \( v_{\pi }( s)\). The optimal value is the value which the policy maximize the value: \( v_{*}( s) =\mathbf{max}_{\pi } v_{\pi }( s)\), the same go for action value. The action-value also can be written in term of value as:
+\begin{equation}
+q_{*}( s,a) =\mathbb{E}[ R_{t+1} +\gamma v_{*}( S_{t+1}) |S_{t} =s,A_{t} =a]
+\end{equation}
+</p>
+<h4>
+Chapter 4 Dynamic Programming</h4>
+<p>
+Suppose thorough this chapter that the MDPs is finite.
+Policy Evaluation : Given policy \( \pi \) (not necessary optimal), what is its corresponding value function?
+As I supposed, the dynamic of state distribution is stationary and known, the corresponding value \( v_{\pi }( s)\) is a system of \( |S|\) simultaneous equation (the number of possible state). The next update of value of state is (try to approximate \( v_{\pi }\))
+\begin{equation}
+v_{k+1}( s) =\sum _{a} \pi ( a|s)\sum _{s^{'} ,r} p\left( s^{'} ,r|s,a\right)\left[ r+\gamma v_{k}\left( s^{'}\right)\right]
+\end{equation}
+As \( k\) go to infinity, this approximate converge to true value of its policy \( v_{\pi }( s)\). Since in DP, the update in value function is finite and consider all possible next state and action not its sampled state.
+Policy improvement : Having the value \( v_{\pi }\), how can we find better policy \( \pi \)?
+Consider selecting action \( a\) in state \( s\) and follow current policy \( \pi \). The inequality \( q_{\pi }\left( s,\pi ^{/}( s)\right)  >v_{\pi }( s)\) holds if the changed in policy at one state before follow the same policy, is better than follow the same policy. This is policy improvement theorem : if we obtain a better policy by follow action \( a=\pi ^{'}( s)\) then the expected value if better, \( v_{\pi ^{'}} \geqslant v_{\pi }\). (proof in page 78) In general, if we follow the greedy policy:
+\begin{gather*}
+\pi ^{'}( s) =\mathrm{argmax}_{a} \ q_{\pi }( s,a)\\
+=\mathrm{argmax}_{a}\sum _{s^{'} ,r} p\left( s^{'} ,r|s,a\right)\left[ r+\gamma v_{\pi }\left( s^{'}\right)\right]
+\end{gather*}
+where \( v_{\pi }\left( s^{'}\right)\) is one-step look ahead for next value of next state. This is policy improvement, finding new policy by follow the greedy of value function of original policy. 
+Policy iteration : A iterative computation of policy evaluation and improvement.
+This we obtain the sequences of approximate in finite MDPs, \( \pi _{0}\stackrel{eval}{\rightarrow } v_{\pi _{0}}\stackrel{imp}{\rightarrow } \pi _{0} \ \cdotp \cdotp \cdotp \rightarrow v_{*} \ ,\ \pi _{*} \ \). It is also possible to truncate the policy evaluation or \( v_{\pi }\) and be not affect the improvement of both value. This is Value iteration where the value is combined the policy improvement and evaluation steps: 
+\begin{equation*}
+\mathrm{v_{k+1}( s) =max}_{a}\sum _{s^{'} ,r} p\left( s^{'} ,r|s,a\right)\left[ r+\gamma v_{k}\left( s^{'}\right)\right]
+\end{equation*}This is update that turn Bellman equation to update rule and is identical to (9) but the action is deterministic with respect to its maximum. (see algorithm page 83)
+</p>
+<h4>
+Chapter 5  Monte Carlo Methods</h4>
+<p>
+This is a more approach to practical solution to general problem where there are infinitely possible state and action spaces in which knowledge of the system is (generally) not known. We acquire ,instead of state transition probability, we have sample transition. And is in the sence that MC is episode-by-episode method (not online step-by-step). 
+
+exploration start : Assigning nonzero probability to every action in the first state ensure exploration ensure that the all state action pairs are visited. In general stochestic action is more useful.
+</p>
+</div>
+
           </div>
         </div><!--/blog_post--><!--/post_details-->
       </div>
