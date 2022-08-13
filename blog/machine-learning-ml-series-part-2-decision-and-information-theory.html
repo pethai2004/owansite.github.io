@@ -71,7 +71,7 @@
     <section class="u-align-center u-clearfix u-section-1" id="sec-bf54">
       <div class="u-clearfix u-sheet u-valign-middle-md u-valign-middle-sm u-valign-middle-xs u-sheet-1"><!--post_details--><!--post_details_options_json--><!--{"source":""}--><!--/post_details_options_json--><!--blog_post-->
         <div class="u-container-style u-expanded-width u-post-details u-post-details-1">
-          <div class="u-container-layout u-valign-middle u-container-layout-1"><!--blog_post_image-->
+          <div class="u-container-layout u-valign-middle u-container-layout-1", , style= "position: center;padding: 0px 100px 5px 100px;"><!--blog_post_image-->
             <!--/blog_post_image--><!--blog_post_header-->
             <h2 class="u-blog-control u-text u-text-1">Machine Learning (ML)-series part 2: Decision and information theory</h2><!--/blog_post_header--><!--blog_post_metadata-->
             <div class="u-blog-control u-metadata u-metadata-1"><!--blog_post_metadata_date-->
@@ -80,7 +80,7 @@
               <!--/blog_post_metadata_comments-->
             </div><!--/blog_post_metadata--><!--blog_post_content-->
             
-<div style= "position: center;padding: 100px 100px;">
+<div style= "position: center;">
 
 <p>
 We consider the agent which want to choose an action \( a\in \mathbf{I} \), for example, the class label or selecting the best model. Each selection encode the information called loss we want to minimize over. And the risk, an expectation of loss over action selection \( R( a|x) =\mathbb{E}_{p( h|x)}[ L( h,a)]\), which specify how we want to choose the estimator or policy. For example, the binary classification, the loss is \( L=\mathbb{E} ( y\neq \hat{y})\) counting the number of misclassified labels, the risk is \( R(\hat{y} |x) =p(\hat{y} \neq y|x)\) where the action is the binary prediction labels.That is, the optimal policy, \( \pi =\mathbf{argmax}_{y} p( y|x)\). Let consider when the action is on the line rather discrete actions. The loss for this would be squared-error, \( L=\ ( h-a)^{2}\), and the risk is \( R( a|x) =\mathbb{E}\left[( h-a)^{2} |x\right]\). We obtain its minimum taking its derivative with respect to action (since it's continuous and diffirentiable) and set it to zeros to obtain \( \frac{\partial }{\partial a}\mathbb{E}\left[( h-a)^{2} |x\right) =-2\mathbb{E}[ h|x] +2a=0,\ \pi =\int h\ p( h|x) dh\). This is called minimum mean squared error estimate. Now, let consider when the action is the distribution rather than specific value. That is we assume the true distribution of action is \( a=q( Y|x)\) but we want to predict another distribution, \( h=p( Y|x)\) and we want it to be as close as possible to the true distribution. That is we want to minimize KL-divergence, \( KL[ p||q]\). 
