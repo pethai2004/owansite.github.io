@@ -37789,7 +37789,9 @@ a.u-link.u-text-hover-grey-90:hover {
   }
 
   .u-header .u-menu-1 {
-    margin-bottom: 32px;
+    margin-top: -48px;
+    margin-right: auto;
+    margin-bottom: 30px;
   }
 }
 
